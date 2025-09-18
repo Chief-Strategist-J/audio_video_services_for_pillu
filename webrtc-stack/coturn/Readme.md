@@ -1,7 +1,7 @@
 # 📘 README — Self-Hosted STUN/TURN with Observability
 
-This folder contains a **self-contained stack** to run a TURN/STUN relay server (`coturn`) with full observability powered by **Grafana Loki + Promtail + Grafana**.
-Everything is open source, isolated, and deployable on Linux or cloud.
+This folder (`webrtc-stack/coturn/`) contains a **self-contained stack** to run a TURN/STUN relay server (`coturn`) with observability powered by **Grafana Loki + Promtail + Grafana**.
+All components are isolated inside this folder, making it easy to deploy locally or on cloud.
 
 ---
 
@@ -9,118 +9,69 @@ Everything is open source, isolated, and deployable on Linux or cloud.
 
 ```
 coturn/
-├─ docker-compose.yml          # Orchestrates coturn + Loki + Promtail + Grafana
-├─ Dockerfile                  # Builds coturn container
-├─ turnserver.conf             # TURN/STUN configuration
-├─ logs/                       # Host directory for coturn logs (mounted inside container)
-├─ loki-config.yml             # Loki configuration (local storage)
-├─ promtail-config.yml         # Promtail configuration (log shipper)
-└─ grafana/
-   ├─ provisioning/
-   │  ├─ datasources/datasource.yml   # Preconfigures Loki datasource
-   │  └─ dashboards/dashboards.yml    # Auto-loads dashboards
-   └─ dashboards/coturn-logs.json     # Dashboard definition (logs explorer)
+├── docker-compose.yml            # Orchestrates coturn + Loki + Promtail + Grafana
+├── Dockerfile                    # Builds coturn container
+├── turnserver.conf               # TURN/STUN configuration
+├── logs/                         # coturn writes logs here
+│   ├── turn.log
+│   ├── turn_1_2025-09-18.log
+│   └── turnserver.pid
+├── loki-config.yml               # Loki config
+├── promtail-config.yml           # Promtail config
+├── grafana/
+│   ├── dashboards/
+│   │   └── coturn-logs.json      # Dashboard definition
+│   └── provisioning/
+│       ├── dashboards/dashboards.yml
+│       └── datasources/datasource.yml
+└── Readme.md
 ```
 
 ---
 
 ## 🚀 What This Stack Does
 
-1. **coturn**
-
-   * Provides **STUN** (discover public IP/port) and **TURN** (media relay when NAT/firewalls block P2P).
-   * Logs connection attempts, allocations, authentication, and relayed traffic.
-   * Writes logs into `./logs/turn.log`.
-
-2. **Promtail**
-
-   * Reads coturn log file.
-   * Ships log lines to Loki.
-
-3. **Loki**
-
-   * Stores log entries in a time-series database optimized for logs.
-   * Exposes a query API (`http://localhost:3100`).
-
-4. **Grafana**
-
-   * Provides a web UI (`http://localhost:3000`, login: `admin/admin`).
-   * Preconfigured with Loki datasource.
-   * Includes a ready-made **coturn logs** dashboard.
-   * You can query, filter, and visualize logs.
+* **coturn** → STUN/TURN relay server for WebRTC. Handles NAT traversal, authentication, and media relay. Logs events to `logs/turn.log`.
+* **Promtail** → Reads coturn logs and ships them to Loki.
+* **Loki** → Stores logs in a queryable time-series database.
+* **Grafana** → UI for visualizing coturn logs in real time.
 
 ---
 
 ## 🛠 Prerequisites
 
-* Linux (tested on Ubuntu/Debian).
-* Docker & Docker Compose installed.
-* Open ports on your host/cloud firewall:
+* Linux (Ubuntu/Debian tested).
+* Docker + Docker Compose installed.
+* Open these ports on firewall/cloud:
 
-  * **3478 UDP/TCP** → coturn listening
-  * **49160–49200 UDP** → relay range (must be open for media)
-  * **3000 TCP** → Grafana UI (only needed for you, not clients)
-  * **3100 TCP** → Loki API (internal, Grafana talks to it)
+  * UDP/TCP **3478** (coturn main port).
+  * UDP **49160–49200** (relay ports).
+  * TCP **3000** (Grafana UI).
+  * TCP **3100** (Loki API, Grafana uses it internally).
 
 ---
 
 ## ⚙️ TURN Configuration (`turnserver.conf`)
 
-Key values in this file:
+Important values:
 
 ```ini
-external-ip=150.107.191.52      # Replace with your public IP (run: curl ifconfig.me)
-realm=pillustun.local           # Replace with your domain later, for now keep as-is
-user=pillu:strongpassword123    # Username:password for clients (update to strong values)
+external-ip=150.107.191.52        # Your public IP (check: curl ifconfig.me)
+realm=pillustun.local             # Replace with your domain if you get one
+user=pillu:strongpassword123      # Username:password for clients
 log-file=/var/log/turnserver/turn.log
-simple-log
 ```
 
-* **external-ip** → your VPS’s public IPv4 address.
-* **realm** → use your own domain if available; else a placeholder like `pillustun.local`.
+* **external-ip** → VPS or server public IP.
+* **realm** → placeholder now (`pillustun.local`), later replace with a domain.
 * **user** → credentials your WebRTC clients will use.
-* **log-file** → where logs are written (mapped to `./logs/turn.log`).
+* **log-file** → mapped to `./logs/turn.log` on host.
 
 ---
 
-## 🔧 How to Run
+## 📡 ICE Server Config (for clients)
 
-### 1. Prepare
-
-```bash
-cd webrtc-stack/coturn
-mkdir -p logs   # log directory on host
-```
-
-### 2. Start the stack
-
-```bash
-docker compose up -d --build
-```
-
-### 3. Verify services
-
-```bash
-docker ps
-docker logs -f coturn      # view coturn logs live
-docker logs -f promtail    # check log shipping
-docker logs -f loki
-docker logs -f grafana
-```
-
-### 4. Open Grafana
-
-* URL: [http://localhost:3000](http://localhost:3000)
-* User: `admin`
-* Pass: `admin`
-
-Dashboard → `coturn logs`.
-
----
-
-## 🧪 Testing TURN/STUN
-
-From your WebRTC client (browser or Python aiortc), configure ICE servers:
+Use these values in browser or Python aiortc clients:
 
 ```json
 {
@@ -142,48 +93,105 @@ From your WebRTC client (browser or Python aiortc), configure ICE servers:
 
 ---
 
-## 📊 Observability in Grafana
+## 🔧 Running the Stack
 
-Once traffic flows:
+1. Go into folder:
 
-* **Log stream panel** → shows real-time coturn logs.
-* **Explore tab** → query with Loki’s LogQL (e.g., `{job="coturn"}` or regex match).
-* **Metrics panels** (optional) → count log lines per time window.
+   ```bash
+   cd webrtc-stack/coturn
+   mkdir -p logs
+   ```
+
+2. Start services:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. Check containers:
+
+   ```bash
+   docker ps
+   ```
+
+   You should see:
+
+   * `coturn`
+   * `coturn-loki`
+   * `coturn-promtail`
+   * `coturn-grafana`
+
+4. Check logs:
+
+   ```bash
+   docker logs -f coturn
+   docker logs -f promtail
+   docker logs -f coturn-loki
+   docker logs -f coturn-grafana
+   ```
+
+---
+
+## 📊 Grafana Observability
+
+* Open Grafana → [http://localhost:3000](http://localhost:3000)
+* Login: **admin / admin**
+* The Loki datasource is already pre-provisioned (via `grafana/provisioning/datasources/datasource.yml`).
+* Open dashboard: **coturn logs**.
+
+If you still see *“Datasource Loki not found”*:
+
+* Make sure the datasource file exists at
+  `grafana/provisioning/datasources/datasource.yml`.
+* Ensure it points to the **container name**:
+
+  ```yaml
+  url: http://coturn-loki:3100
+  ```
+* Restart Grafana:
+
+  ```bash
+  docker compose restart grafana
+  ```
+
+---
+
+## 🧪 Queries in Grafana (LogQL)
+
+Examples in Explore tab:
+
+* Show all coturn logs:
+
+  ```
+  {job="coturn"}
+  ```
+* Count log lines per 5 minutes:
+
+  ```
+  sum(count_over_time({job="coturn"}[5m]))
+  ```
+* Filter only auth failures:
+
+  ```
+  {job="coturn"} |= "unauthorized"
+  ```
 
 ---
 
 ## 📉 Resource Usage
 
-* **coturn** → \~50 MB RAM idle.
-* **Loki + Promtail + Grafana** → 350–550 MB RAM idle combined.
-* Safe to run on a small VM (1 vCPU, 1–2 GB RAM).
+* **coturn** → \~50 MB RAM.
+* **Loki + Promtail + Grafana** → \~350–500 MB RAM idle.
+* Runs fine on a small VM (1 vCPU, 1–2 GB RAM).
 
 ---
 
-## 🌍 Moving to Cloud
+## 🔒 Security Tips
 
-1. Set `external-ip` in `turnserver.conf` to your VPS public IP.
-2. If you own a domain → set `realm=yourdomain.com`.
-3. Open firewall for:
-
-   * UDP/TCP 3478
-   * UDP 49160–49200
-   * TCP 3000 (Grafana UI)
-4. Restart stack:
-
-   ```bash
-   docker compose down
-   docker compose up -d --build
-   ```
-
----
-
-## 🔒 Security Recommendations
-
-* Change the default `user` to long random credentials.
-* Do not expose Grafana publicly without password change.
-* For stricter networks: enable TLS for TURN (port 5349) with `cert`/`pkey` in `turnserver.conf`.
-* Add HTTPS/TLS to Grafana and Loki with reverse proxy (Nginx/Traefik) if exposed externally.
+* Change `user=pillu:strongpassword123` to a strong secret before real usage.
+* Do not expose Grafana publicly with default password.
+* Use a domain + TLS for TURN (`5349`) if you need production-grade encryption.
+* Limit Grafana + Loki ports to your own IP using firewall rules.
 
 ---
 
@@ -197,8 +205,4 @@ Once traffic flows:
 
 ---
 
-✅ With this setup you now have:
-
-* A **production-ready STUN/TURN relay**
-* Persistent **logs shipped to Loki**
-* **Grafana dashboard** for observability
+✅ This stack now gives you a **self-hosted STUN/TURN relay** with full **log observability in Grafana**.
