@@ -1,0 +1,20 @@
+{
+    "uid": "mediasoup",
+    "title": "Mediasoup Metrics",
+    "schemaVersion": 39,
+    "version": 1,
+    "panels": [
+      {
+        "type": "timeseries",
+        "title": "Active Rooms",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "datasource": { "type": "loki", "uid": "Loki" },
+            "expr": "sum by () (mediasoup_active_rooms)"
+          }
+        ]
+      }
+    ]
+  }
+  

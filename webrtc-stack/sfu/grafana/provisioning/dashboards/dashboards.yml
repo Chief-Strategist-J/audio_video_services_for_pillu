@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: ${GRAFANA_DASHBOARD_PROVIDER_NAME}
+    orgId: 1
+    folder: ${GRAFANA_DASHBOARD_FOLDER}
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: ${GRAFANA_DASHBOARDS_PATH}

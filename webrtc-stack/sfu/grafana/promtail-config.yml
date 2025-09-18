@@ -1,0 +1,18 @@
+server:
+  http_listen_port: ${PROMTAIL_INTERNAL_PORT}
+  grpc_listen_port: ${PROMTAIL_GRPC_PORT}
+
+positions:
+  filename: /tmp/positions.yml
+
+clients:
+  - url: ${LOKI_INTERNAL_URL}
+
+scrape_configs:
+  - job_name: sfu_logs
+    static_configs:
+      - targets:
+          - ${PROMTAIL_TARGETS}
+        labels:
+          job: sfu
+          __path__: ${PROMTAIL_LOG_PATHS}

@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  sfu:
+    build:
+      context: .
+    container_name: sfu
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "${API_PORT}:${API_PORT}" 
+      - "${MEDIA_MIN_PORT}-${MEDIA_MAX_PORT}:${MEDIA_MIN_PORT}-${MEDIA_MAX_PORT}/udp"
+    volumes:
+      - ./src:/usr/src/app/src
+    depends_on:
+      - grafana
+      - loki
+      - promtail
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: -config.file=/etc/loki/loki-config.yml -config.expand-env=true
+    volumes:
+      - ./grafana/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki-data:/tmp
+    ports:
+      - "${LOKI_PORT}:3100"
+    networks:
+      - sfu-net
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: -config.file=/etc/promtail/promtail-config.yml -config.expand-env=true
+    volumes:
+      - ./grafana/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
+      - /var/log:/var/log
+    depends_on:
+      - loki
+    networks:
+      - sfu-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_PROVISIONING_PATH=/etc/grafana/provisioning
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    depends_on:
+      - loki
+
+volumes:
+  loki-data:
+
+networks:
+  sfu-net:
+    driver: bridge

@@ -7,11 +7,11 @@ from pathlib import Path
 
 app = FastAPI()
 
-# Serve static frontend files (index.html, app.js, etc.)
+
 static_dir = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-# Simple in-memory room → set of websocket connections
+
 rooms: Dict[str, Set[WebSocket]] = {}
 
 
