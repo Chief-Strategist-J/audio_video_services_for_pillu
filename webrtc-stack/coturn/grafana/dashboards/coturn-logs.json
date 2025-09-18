@@ -1,15 +1,14 @@
 {
-    "title": "coturn logs",
-    "panels": [
-      {
-        "type": "logs",
-        "title": "coturn log stream",
-        "datasource": {"type": "loki", "uid": "loki"},
-        "targets": [{ "expr": "{job=\"coturn\"}" }],
-        "gridPos": {"h": 20, "w": 24, "x": 0, "y": 0}
-      }
-    ],
-    "schemaVersion": 39,
-    "version": 1
-  }
-  
+  "title": "coturn logs",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "logs",
+      "title": "coturn log stream",
+      "datasource": { "type": "loki", "uid": "Loki" },
+      "targets": [{ "expr": "{job=\"coturn\"}" }],
+      "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 }
+    }
+  ]
+}

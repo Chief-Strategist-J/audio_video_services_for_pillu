@@ -1,10 +1,8 @@
-1300: (1): INFO: log file opened: /var/log/turnserver/turn.log
-1300: (1): INFO: log file reopened: /var/log/turnserver/turn.log
 0: (1): INFO: log file opened: /var/log/turnserver/turn.log
 0: (1): INFO: Listener address to use: 0.0.0.0
 0: (1): INFO: Coturn Version Coturn-4.6.2 'Gorst'
-0: (1): INFO: Max number of open files/sockets allowed for this process: 524288
-0: (1): INFO: Due to the open files/sockets limitation, max supported number of TURN Sessions possible is: 262000 (approximately)
+0: (1): INFO: Max number of open files/sockets allowed for this process: 1048576
+0: (1): INFO: Due to the open files/sockets limitation, max supported number of TURN Sessions possible is: 524000 (approximately)
 0: (1): INFO: 
 
 ==== Show him the instruments, Practical Frost: ====
@@ -34,31 +32,31 @@
 0: (1): INFO:   relay 0.0.0.0 initialization...
 0: (1): INFO:   relay 0.0.0.0 initialization done
 0: (1): INFO: Relay ports initialization done
-0: (9): DEBUG: turn server id=2 created
-0: (11): DEBUG: turn server id=4 created
-0: (8): DEBUG: turn server id=1 created
-0: (12): DEBUG: turn server id=5 created
-0: (12): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
-0: (9): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
-0: (10): DEBUG: turn server id=3 created
-0: (1): INFO: Total General servers: 12
-0: (8): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
-0: (13): DEBUG: turn server id=6 created
 0: (7): DEBUG: turn server id=0 created
-0: (13): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
-0: (14): DEBUG: turn server id=7 created
-0: (10): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
-0: (14): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
-0: (15): DEBUG: turn server id=8 created
-0: (17): DEBUG: turn server id=10 created
-0: (11): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
+0: (8): DEBUG: turn server id=1 created
 0: (7): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
+0: (9): DEBUG: turn server id=2 created
+0: (8): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
+0: (9): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
+0: (11): DEBUG: turn server id=4 created
+0: (10): DEBUG: turn server id=3 created
+0: (11): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
+0: (10): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
+0: (1): INFO: Total General servers: 12
+0: (13): DEBUG: turn server id=6 created
+0: (13): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
 0: (16): DEBUG: turn server id=9 created
+0: (15): DEBUG: turn server id=8 created
+0: (12): DEBUG: turn server id=5 created
+0: (14): DEBUG: turn server id=7 created
+0: (16): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
+0: (17): DEBUG: turn server id=10 created
+0: (12): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
 0: (18): DEBUG: turn server id=11 created
+0: (14): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
 0: (1): INFO: IPv4. UDP listener opened on: 0.0.0.0:3478
 0: (15): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
-0: (17): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
-0: (16): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
 0: (18): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
+0: (17): INFO: IPv4. TCP listener opened on : 0.0.0.0:3478
 0: (1): INFO: Total auth threads: 7
 0: (1): INFO: turnserver compiled without prometheus support
