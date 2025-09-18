@@ -1,0 +1,37 @@
+# --------------------
+# Python
+# --------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# --------------------
+# Logs & PIDs
+# --------------------
+*.log
+*.pid
+coturn/logs/
+
+# --------------------
+# Node / TypeScript build (signaling frontend)
+# --------------------
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# --------------------
+# IDE / OS files
+# --------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
